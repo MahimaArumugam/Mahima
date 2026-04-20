@@ -1,0 +1,25 @@
+import heapq
+
+class Solution:
+    def mergeKLists(self, lists: List[Optional[ListNode]]) -> Optional[ListNode]:
+        # Create a min-heap to store (node_value, index, node_object)
+        # We include the index to handle cases where node values are identical
+        heap = []
+        
+        for i, l in enumerate(lists):
+            if l:
+                heapq.heappush(heap, (l.val, i, l))
+        
+        dummy = ListNode(0)
+        curr = dummy
+        
+        while heap:
+            val, i, node = heapq.heappop(heap)
+            curr.next = node
+            curr = curr.next
+            
+            # If the extracted node has a next node, push it into the heap
+            if node.next:
+                heapq.heappush(heap, (node.next.val, i, node.next))
+                
+        return dummy.next
