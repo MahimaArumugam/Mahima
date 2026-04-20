@@ -1,0 +1,32 @@
+class Solution:
+    def totalNQueens(self, n: int) -> int:
+        self.count = 0
+        
+        def backtrack(row, cols, pos_diag, neg_diag):
+            if row == n:
+                self.count += 1
+                return
+
+            # (1 << n) - 1 creates a mask of n ones (e.g., 00011111 for n=5)
+            # ~(cols | pos_diag | neg_diag) finds available spots (as 0s)
+            # We bitwise AND with 'full_mask' to ignore bits beyond n
+            available_slots = ((1 << n) - 1) & ~(cols | pos_diag | neg_diag)
+            
+            while available_slots:
+                # Extract the lowest set bit (position to place a queen)
+                current_slot = available_slots & -available_slots
+                
+                # Mark this slot as taken and move to the next row
+                # pos_diag is shifted left, neg_diag is shifted right for the next row
+                backtrack(
+                    row + 1, 
+                    cols | current_slot, 
+                    (pos_diag | current_slot) << 1, 
+                    (neg_diag | current_slot) >> 1
+                )
+                
+                # Remove the bit we just processed
+                available_slots &= available_slots - 1
+
+        backtrack(0, 0, 0, 0)
+        return self.count
